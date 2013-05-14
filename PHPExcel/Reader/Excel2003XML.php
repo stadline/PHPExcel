@@ -33,12 +33,6 @@ if (!defined('PHPEXCEL_ROOT')) {
 	 */
 	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
 	require(PHPEXCEL_ROOT . 'PHPExcel/Autoloader.php');
-	PHPExcel_Autoloader::Register();
-	PHPExcel_Shared_ZipStreamWrapper::register();
-	// check mbstring.func_overload
-	if (ini_get('mbstring.func_overload') & 2) {
-		throw new Exception('Multibyte function overloading in PHP must be disabled for string functions (2).');
-	}
 }
 
 /**
@@ -69,7 +63,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 	 *
 	 * @var int
 	 */
-	private $_sheetIndex;
+	private $_sheetIndex 	= 0;
 
 	/**
 	 * Formats
@@ -99,7 +93,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 	 * Set read data only
 	 *
 	 * @param boolean $pValue
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_Excel2003XML
 	 */
 	public function setReadDataOnly($pValue = false) {
 		$this->_readDataOnly = $pValue;
@@ -120,7 +114,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 	 * Set which sheets to load
 	 *
 	 * @param mixed $value
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_Excel2003XML
 	 */
 	public function setLoadSheetsOnly($value = null)
 	{
@@ -132,7 +126,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 	/**
 	 * Set all sheets to load
 	 *
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_Excel2003XML
 	 */
 	public function setLoadAllSheets()
 	{
@@ -153,7 +147,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 	 * Set read filter
 	 *
 	 * @param PHPExcel_Reader_IReadFilter $pValue
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_Excel2003XML
 	 */
 	public function setReadFilter(PHPExcel_Reader_IReadFilter $pValue) {
 		$this->_readFilter = $pValue;
@@ -164,7 +158,6 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 	 * Create a new PHPExcel_Reader_Excel2003XML
 	 */
 	public function __construct() {
-		$this->_sheetIndex 	= 0;
 		$this->_readFilter 	= new PHPExcel_Reader_DefaultReadFilter();
 	}
 
@@ -272,6 +265,11 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 		return $pixels;
 	}
 
+
+	private static function _hex2str($hex) {
+		return chr(hexdec($hex[1]));
+	}
+
 	/**
 	 * Loads PHPExcel from file into PHPExcel instance
 	 *
@@ -307,6 +305,9 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 				PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY
 			);
 
+		$timezoneObj = new DateTimeZone('Europe/London');
+		$GMT = new DateTimeZone('UTC');
+
 
 		// Check if file exists
 		if (!file_exists($pFilename)) {
@@ -315,48 +316,79 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 
 		$xml = simplexml_load_file($pFilename);
 		$namespaces = $xml->getNamespaces(true);
-//		echo '<pre>';
-//		print_r($namespaces);
-//		echo '</pre><hr />';
-//
-//		echo '<pre>';
-//		print_r($xml);
-//		echo '</pre><hr />';
-//
+
 		$docProps = $objPHPExcel->getProperties();
-		foreach($xml->DocumentProperties[0] as $propertyName => $propertyValue) {
-			switch ($propertyName) {
-				case 'Title' :
-						$docProps->setTitle($propertyValue);
-						break;
-				case 'Subject' :
-						$docProps->setSubject($propertyValue);
-						break;
-				case 'Author' :
-						$docProps->setCreator($propertyValue);
-						break;
-				case 'Created' :
-						$creationDate = strtotime($propertyValue);
-						$docProps->setCreated($creationDate);
-						break;
-				case 'LastAuthor' :
-						$docProps->setLastModifiedBy($propertyValue);
-						break;
-				case 'Company' :
-						$docProps->setCompany($propertyValue);
-						break;
-				case 'Category' :
-						$docProps->setCategory($propertyValue);
-						break;
-				case 'Keywords' :
-						$docProps->setKeywords($propertyValue);
-						break;
-				case 'Description' :
-						$docProps->setDescription($propertyValue);
-						break;
+		if (isset($xml->DocumentProperties[0])) {
+			foreach($xml->DocumentProperties[0] as $propertyName => $propertyValue) {
+				switch ($propertyName) {
+					case 'Title' :
+							$docProps->setTitle($propertyValue);
+							break;
+					case 'Subject' :
+							$docProps->setSubject($propertyValue);
+							break;
+					case 'Author' :
+							$docProps->setCreator($propertyValue);
+							break;
+					case 'Created' :
+							$creationDate = strtotime($propertyValue);
+							$docProps->setCreated($creationDate);
+							break;
+					case 'LastAuthor' :
+							$docProps->setLastModifiedBy($propertyValue);
+							break;
+					case 'LastSaved' :
+							$lastSaveDate = strtotime($propertyValue);
+							$docProps->setModified($lastSaveDate);
+							break;
+					case 'Company' :
+							$docProps->setCompany($propertyValue);
+							break;
+					case 'Category' :
+							$docProps->setCategory($propertyValue);
+							break;
+					case 'Manager' :
+							$docProps->setManager($propertyValue);
+							break;
+					case 'Keywords' :
+							$docProps->setKeywords($propertyValue);
+							break;
+					case 'Description' :
+							$docProps->setDescription($propertyValue);
+							break;
+				}
 			}
 		}
-
+		if (isset($xml->CustomDocumentProperties)) {
+			foreach($xml->CustomDocumentProperties[0] as $propertyName => $propertyValue) {
+				$propertyAttributes = $propertyValue->attributes($namespaces['dt']);
+				$propertyName = preg_replace_callback('/_x([0-9a-z]{4})_/','PHPExcel_Reader_Excel2003XML::_hex2str',$propertyName);
+				$propertyType = PHPExcel_DocumentProperties::PROPERTY_TYPE_UNKNOWN;
+				switch((string) $propertyAttributes) {
+					case 'string' :
+						$propertyType = PHPExcel_DocumentProperties::PROPERTY_TYPE_STRING;
+						$propertyValue = trim($propertyValue);
+						break;
+					case 'boolean' :
+						$propertyType = PHPExcel_DocumentProperties::PROPERTY_TYPE_BOOLEAN;
+						$propertyValue = (bool) $propertyValue;
+						break;
+					case 'integer' :
+						$propertyType = PHPExcel_DocumentProperties::PROPERTY_TYPE_INTEGER;
+						$propertyValue = intval($propertyValue);
+						break;
+					case 'float' :
+						$propertyType = PHPExcel_DocumentProperties::PROPERTY_TYPE_FLOAT;
+						$propertyValue = floatval($propertyValue);
+						break;
+					case 'dateTime.tz' :
+						$propertyType = PHPExcel_DocumentProperties::PROPERTY_TYPE_DATE;
+						$propertyValue = strtotime(trim($propertyValue));
+						break;
+				}
+				$docProps->setCustomProperty($propertyName,$propertyValue,$propertyType);
+			}
+		}
 
 		foreach($xml->Styles[0] as $style) {
 			$style_ss = $style->attributes($namespaces['ss']);
@@ -539,6 +571,12 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 						$columnID = PHPExcel_Cell::stringFromColumnIndex($cell_ss['Index']-1);
 					}
 					$cellRange = $columnID.$rowID;
+
+					if (!is_null($this->getReadFilter())) {
+						if (!$this->getReadFilter()->readCell($columnID, $rowID, $worksheetName)) {
+							continue;
+						}
+					}
 
 					if ((isset($cell_ss['MergeAcross'])) || (isset($cell_ss['MergeDown']))) {
 						$columnTo = $columnID;

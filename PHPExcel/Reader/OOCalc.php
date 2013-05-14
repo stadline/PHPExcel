@@ -33,12 +33,6 @@ if (!defined('PHPEXCEL_ROOT')) {
 	 */
 	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
 	require(PHPEXCEL_ROOT . 'PHPExcel/Autoloader.php');
-	PHPExcel_Autoloader::Register();
-	PHPExcel_Shared_ZipStreamWrapper::register();
-	// check mbstring.func_overload
-	if (ini_get('mbstring.func_overload') & 2) {
-		throw new Exception('Multibyte function overloading in PHP must be disabled for string functions (2).');
-	}
 }
 
 /**
@@ -69,7 +63,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 	 *
 	 * @var int
 	 */
-	private $_sheetIndex;
+	private $_sheetIndex 	= 0;
 
 	/**
 	 * Formats
@@ -99,7 +93,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 	 * Set read data only
 	 *
 	 * @param boolean $pValue
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_OOCalc
 	 */
 	public function setReadDataOnly($pValue = false) {
 		$this->_readDataOnly = $pValue;
@@ -120,7 +114,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 	 * Set which sheets to load
 	 *
 	 * @param mixed $value
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_OOCalc
 	 */
 	public function setLoadSheetsOnly($value = null)
 	{
@@ -132,7 +126,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 	/**
 	 * Set all sheets to load
 	 *
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_OOCalc
 	 */
 	public function setLoadAllSheets()
 	{
@@ -153,7 +147,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 	 * Set read filter
 	 *
 	 * @param PHPExcel_Reader_IReadFilter $pValue
-	 * @return PHPExcel_Reader_Excel2007
+	 * @return PHPExcel_Reader_OOCalc
 	 */
 	public function setReadFilter(PHPExcel_Reader_IReadFilter $pValue) {
 		$this->_readFilter = $pValue;
@@ -164,7 +158,6 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 	 * Create a new PHPExcel_Reader_OOCalc
 	 */
 	public function __construct() {
-		$this->_sheetIndex 	= 0;
 		$this->_readFilter 	= new PHPExcel_Reader_DefaultReadFilter();
 	}
 
@@ -262,8 +255,6 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 					$officePropertyDC = $officePropertyData->children($namespacesMeta['dc']);
 				}
 				foreach($officePropertyDC as $propertyName => $propertyValue) {
-//					echo $propertyName.' = '.$propertyValue.'<hr />';
-
 					switch ($propertyName) {
 						case 'title' :
 								$docProps->setTitle($propertyValue);
@@ -273,10 +264,12 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 								break;
 						case 'creator' :
 								$docProps->setCreator($propertyValue);
+								$docProps->setLastModifiedBy($propertyValue);
 								break;
 						case 'date' :
 								$creationDate = strtotime($propertyValue);
 								$docProps->setCreated($creationDate);
+								$docProps->setModified($creationDate);
 								break;
 						case 'description' :
 								$docProps->setDescription($propertyValue);
@@ -289,16 +282,42 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 				}
 				foreach($officePropertyMeta as $propertyName => $propertyValue) {
 					$propertyValueAttributes = $propertyValue->attributes($namespacesMeta['meta']);
-
-//					echo $propertyName.' = '.$propertyValue.'<br />';
-//					foreach ($propertyValueAttributes as $key => $value) {
-//						echo $key.' = '.$value.'<br />';
-//					}
-//					echo '<hr />';
-//
 					switch ($propertyName) {
+						case 'initial-creator' :
+								$docProps->setCreator($propertyValue);
+								break;
 						case 'keyword' :
 								$docProps->setKeywords($propertyValue);
+								break;
+						case 'creation-date' :
+								$creationDate = strtotime($propertyValue);
+								$docProps->setCreated($creationDate);
+								break;
+						case 'user-defined' :
+								$propertyValueType = PHPExcel_DocumentProperties::PROPERTY_TYPE_STRING;
+								foreach ($propertyValueAttributes as $key => $value) {
+									if ($key == 'name') {
+										$propertyValueName = (string) $value;
+									} elseif($key == 'value-type') {
+										switch ($value) {
+											case 'date'	:
+												$propertyValue = PHPExcel_DocumentProperties::convertProperty($propertyValue,'date');
+												$propertyValueType = PHPExcel_DocumentProperties::PROPERTY_TYPE_DATE;
+												break;
+											case 'boolean'	:
+												$propertyValue = PHPExcel_DocumentProperties::convertProperty($propertyValue,'bool');
+												$propertyValueType = PHPExcel_DocumentProperties::PROPERTY_TYPE_BOOLEAN;
+												break;
+											case 'float'	:
+												$propertyValue = PHPExcel_DocumentProperties::convertProperty($propertyValue,'r4');
+												$propertyValueType = PHPExcel_DocumentProperties::PROPERTY_TYPE_FLOAT;
+												break;
+											default :
+												$propertyValueType = PHPExcel_DocumentProperties::PROPERTY_TYPE_STRING;
+										}
+									}
+								}
+								$docProps->setCustomProperty($propertyValueName,$propertyValue,$propertyValueType);
 								break;
 					}
 				}
@@ -349,6 +368,12 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 							case 'table-row' :
 								$columnID = 'A';
 								foreach($rowData as $key => $cellData) {
+									if (!is_null($this->getReadFilter())) {
+										if (!$this->getReadFilter()->readCell($columnID, $rowID, $worksheetName)) {
+											continue;
+										}
+									}
+
 //									echo '<b>'.$columnID.$rowID.'</b><br />';
 									$cellDataText = $cellData->children($namespacesContent['text']);
 									$cellDataOfficeAttributes = $cellData->attributes($namespacesContent['office']);

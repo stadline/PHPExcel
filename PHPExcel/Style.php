@@ -169,14 +169,12 @@ class PHPExcel_Style implements PHPExcel_IComparable
 		$selectedCell = $this->getActiveCell(); // e.g. 'A1'
 
 		if ($activeSheet->cellExists($selectedCell)) {
-			$cell = $activeSheet->getCell($selectedCell);
-			$xfIndex = $cell->getXfIndex();
+			$xfIndex = $activeSheet->getCell($selectedCell)->getXfIndex();
 		} else {
 			$xfIndex = 0;
 		}
 
-		$activeStyle = $this->_parent->getCellXfByIndex($xfIndex);
-		return $activeStyle;
+		return $this->_parent->getCellXfByIndex($xfIndex);
 	}
 
 	/**
@@ -270,8 +268,6 @@ class PHPExcel_Style implements PHPExcel_IComparable
 				$pRange = strtoupper($pRange);
 
 				// Is it a cell range or a single cell?
-				$rangeA 	= '';
-				$rangeB 	= '';
 				if (strpos($pRange, ':') === false) {
 					$rangeA = $pRange;
 					$rangeB = $pRange;
@@ -610,9 +606,7 @@ class PHPExcel_Style implements PHPExcel_IComparable
      */
     public function setConditionalStyles($pValue = null) {
 		if (is_array($pValue)) {
-			foreach (PHPExcel_Cell::extractAllCellReferencesInRange($this->getSelectedCells()) as $cellReference) {
-				$this->getActiveSheet()->setConditionalStyles($cellReference, $pValue);
-			}
+			$this->getActiveSheet()->setConditionalStyles($this->getSelectedCells(), $pValue);
 		}
 		return $this;
     }

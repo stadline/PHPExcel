@@ -172,7 +172,7 @@ class PHPExcel_Writer_Excel2007 implements PHPExcel_Writer_IWriter
 	 * @param 	string 	$pPartName		Writer part name
 	 * @return 	PHPExcel_Writer_Excel2007_WriterPart
 	 */
-	function getWriterPart($pPartName = '') {
+	public function getWriterPart($pPartName = '') {
 		if ($pPartName != '' && isset($this->_writerParts[strtolower($pPartName)])) {
 			return $this->_writerParts[strtolower($pPartName)];
 		} else {
@@ -188,7 +188,7 @@ class PHPExcel_Writer_Excel2007 implements PHPExcel_Writer_IWriter
 	 */
 	public function save($pFilename = null)
 	{
-		if (!is_null($this->_spreadSheet)) {
+		if ($this->_spreadSheet !== NULL) {
 			// garbage collect
 			$this->_spreadSheet->garbageCollect();
 
@@ -242,6 +242,10 @@ class PHPExcel_Writer_Excel2007 implements PHPExcel_Writer_IWriter
 			// Add document properties to ZIP file
 			$objZip->addFromString('docProps/app.xml', 				$this->getWriterPart('DocProps')->writeDocPropsApp($this->_spreadSheet));
 			$objZip->addFromString('docProps/core.xml', 			$this->getWriterPart('DocProps')->writeDocPropsCore($this->_spreadSheet));
+			$customPropertiesPart = $this->getWriterPart('DocProps')->writeDocPropsCustom($this->_spreadSheet);
+			if ($customPropertiesPart !== NULL) {
+				$objZip->addFromString('docProps/custom.xml', 		$customPropertiesPart);
+			}
 
 			// Add theme to ZIP file
 			$objZip->addFromString('xl/theme/theme1.xml', 			$this->getWriterPart('Theme')->writeTheme($this->_spreadSheet));
@@ -359,7 +363,7 @@ class PHPExcel_Writer_Excel2007 implements PHPExcel_Writer_IWriter
 	 * @throws Exception
 	 */
 	public function getPHPExcel() {
-		if (!is_null($this->_spreadSheet)) {
+		if ($this->_spreadSheet !== null) {
 			return $this->_spreadSheet;
 		} else {
 			throw new Exception("No PHPExcel assigned.");
@@ -499,7 +503,7 @@ class PHPExcel_Writer_Excel2007 implements PHPExcel_Writer_IWriter
 	public function setUseDiskCaching($pValue = false, $pDirectory = null) {
 		$this->_useDiskCaching = $pValue;
 
-		if (!is_null($pDirectory)) {
+		if ($pDirectory !== NULL) {
     		if (is_dir($pDirectory)) {
     			$this->_diskCachingDirectory = $pDirectory;
     		} else {

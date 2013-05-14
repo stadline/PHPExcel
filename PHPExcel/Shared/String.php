@@ -303,7 +303,7 @@ class PHPExcel_Shared_String
 
 		// Sometimes iconv_substr('A', 0, 1, 'UTF-8') just returns false in PHP 5.2.0
 		// we cannot use iconv in that case either (http://bugs.php.net/bug.php?id=37773)
-		if (!@iconv('UTF-8', 'UTF-16LE', 'x')) {
+		if (!@iconv_substr('A', 0, 1, 'UTF-8')) {
 			self::$_isIconvEnabled = false;
 			return false;
 		}
@@ -322,6 +322,15 @@ class PHPExcel_Shared_String
 		return true;
 	}
 
+	public static function buildCharacterSets() {
+		if(empty(self::$_controlCharacters)) {
+			self::_buildControlCharacters();
+		}
+		if(empty(self::$_SYLKCharacters)) {
+			self::_buildSYLKCharacters();
+		}
+	}
+
 	/**
 	 * Convert from OpenXML escaped control character to PHP control character
 	 *
@@ -337,10 +346,6 @@ class PHPExcel_Shared_String
 	 * @return 	string
 	 */
 	public static function ControlCharacterOOXML2PHP($value = '') {
-		if(empty(self::$_controlCharacters)) {
-			self::_buildControlCharacters();
-		}
-
 		return str_replace( array_keys(self::$_controlCharacters), array_values(self::$_controlCharacters), $value );
 	}
 
@@ -359,10 +364,6 @@ class PHPExcel_Shared_String
 	 * @return 	string
 	 */
 	public static function ControlCharacterPHP2OOXML($value = '') {
-		if(empty(self::$_controlCharacters)) {
-			self::_buildControlCharacters();
-		}
-
 		return str_replace( array_values(self::$_controlCharacters), array_keys(self::$_controlCharacters), $value );
 	}
 
@@ -491,7 +492,7 @@ class PHPExcel_Shared_String
 		// else, no conversion
 		return $value;
 	}
-	
+
 	/**
 	 * Decode UTF-16 encoded strings.
 	 *
@@ -533,18 +534,15 @@ class PHPExcel_Shared_String
 	public static function CountCharacters($value, $enc = 'UTF-8')
 	{
 		if (self::getIsIconvEnabled()) {
-			$count = iconv_strlen($value, $enc);
-			return $count;
+			return iconv_strlen($value, $enc);
 		}
 
 		if (self::getIsMbstringEnabled()) {
-			$count = mb_strlen($value, $enc);
-			return $count;
+			return mb_strlen($value, $enc);
 		}
 
 		// else strlen
-		$count = strlen($value);
-		return $count;
+		return strlen($value);
 	}
 
 	/**
@@ -558,18 +556,15 @@ class PHPExcel_Shared_String
 	public static function Substring($pValue = '', $pStart = 0, $pLength = 0)
 	{
 		if (self::getIsIconvEnabled()) {
-			$string = iconv_substr($pValue, $pStart, $pLength, 'UTF-8');
-			return $string;
+			return iconv_substr($pValue, $pStart, $pLength, 'UTF-8');
 		}
 
 		if (self::getIsMbstringEnabled()) {
-			$string = mb_substr($pValue, $pStart, $pLength, 'UTF-8');
-			return $string;
+			return mb_substr($pValue, $pStart, $pLength, 'UTF-8');
 		}
 
 		// else substr
-		$string = substr($pValue, $pStart, $pLength);
-		return $string;
+		return substr($pValue, $pStart, $pLength);
 	}
 
 
@@ -602,7 +597,7 @@ class PHPExcel_Shared_String
 			$localeconv = localeconv();
 			self::$_decimalSeparator = $localeconv['decimal_point'] != ''
 				? $localeconv['decimal_point'] : $localeconv['mon_decimal_point'];
-				
+
 			if (self::$_decimalSeparator == '')
 			{
 				// Default to .
@@ -661,10 +656,6 @@ class PHPExcel_Shared_String
 		// If there is no escape character in the string there is nothing to do
 		if (strpos($pValue, '') === false) {
 			return $pValue;
-		}
-
-		if(empty(self::$_SYLKCharacters)) {
-			self::_buildSYLKCharacters();
 		}
 
 		foreach (self::$_SYLKCharacters as $k => $v) {

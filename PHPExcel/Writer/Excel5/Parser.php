@@ -522,7 +522,7 @@ class PHPExcel_Writer_Excel5_Parser
 	 */
 	function _convert($token)
 	{
-		if (preg_match("/^\"[^\"]{0,255}\"$/", $token)) {
+		if (preg_match("/\"([^\"]|\"\"){0,255}\"/", $token)) {
 			return $this->_convertString($token);
 
 		} elseif (is_numeric($token)) {
@@ -556,6 +556,10 @@ class PHPExcel_Writer_Excel5_Parser
 		} elseif (isset($this->ptg[$token])) {
 			return pack("C", $this->ptg[$token]);
 
+        // match error codes
+		} elseif (preg_match("/^#[A-Z0\/]{3,5}[!?]{1}$/", $token) or $token == '#N/A') {
+		    return $this->_convertError($token);
+
 		// commented so argument number can be processed correctly. See toReversePolish().
 		/*elseif (preg_match("/[A-Z0-9\xc0-\xdc\.]+/",$token))
 		{
@@ -566,6 +570,7 @@ class PHPExcel_Writer_Excel5_Parser
 		} elseif ($token == 'arg') {
 			return '';
 		}
+
 		// TODO: use real error codes
 		throw new Exception("Unknown token $token");
 	}
@@ -790,6 +795,26 @@ class PHPExcel_Writer_Excel5_Parser
 
 		return $ptgRef . $ext_ref. $row . $col;
 	}
+
+    /**
+     * Convert an error code to a ptgErr
+     *
+     * @access private
+     * @param mixed $num an error codefor conversion to its ptg value
+     */
+    function _convertError($errorCode)
+    {
+        switch ($errorCode) {
+            case '#NULL!':	return pack("C", 0x00);
+            case '#DIV/0!':	return pack("C", 0x07);
+            case '#VALUE!':	return pack("C", 0x0F);
+            case '#REF!':	return pack("C", 0x17);
+            case '#NAME?':	return pack("C", 0x1D);
+            case '#NUM!':	return pack("C", 0x24);
+            case '#N/A':	return pack("C", 0x2A);
+        }
+        return pack("C", 0xFF);
+    }
 
 	/**
 	 * Convert the sheet name part of an external reference, for example "Sheet1" or
@@ -1030,7 +1055,7 @@ class PHPExcel_Writer_Excel5_Parser
 		$col    = 0;
 		$col_ref_length = strlen($col_ref);
 		for ($i = 0; $i < $col_ref_length; ++$i) {
-			$col += (ord($col_ref{$i}) - ord('A') + 1) * pow(26, $expn);
+			$col += (ord($col_ref{$i}) - 64) * pow(26, $expn);
 			--$expn;
 		}
 
@@ -1100,27 +1125,20 @@ class PHPExcel_Writer_Excel5_Parser
 	{
 		switch($token) {
 			case "+":
-				return $token;
-				break;
 			case "-":
-				return $token;
-				break;
 			case "*":
-				return $token;
-				break;
 			case "/":
-				return $token;
-				break;
 			case "(":
-				return $token;
-				break;
 			case ")":
-				return $token;
-				break;
 			case ",":
-				return $token;
-				break;
 			case ";":
+			case ">=":
+			case "<=":
+			case "=":
+			case "<>":
+			case "^":
+			case "&":
+			case "%":
 				return $token;
 				break;
 			case ">":
@@ -1134,21 +1152,6 @@ class PHPExcel_Writer_Excel5_Parser
 				if (($this->_lookahead == '=') or ($this->_lookahead == '>')) {
 					break;
 				}
-				return $token;
-				break;
-			case ">=":
-				return $token;
-				break;
-			case "<=":
-				return $token;
-				break;
-			case "=":
-				return $token;
-				break;
-			case "<>":
-				return $token;
-				break;
-			case "^":
 				return $token;
 				break;
 			default:
@@ -1200,10 +1203,15 @@ class PHPExcel_Writer_Excel5_Parser
 					return $token;
 				}
 				// If it's a string (of maximum 255 characters)
-				elseif (preg_match("/^\"[^\"]{0,255}\"$/",$token))
+				elseif (preg_match("/\"([^\"]|\"\"){0,255}\"/",$token) and $this->_lookahead != '"' and (substr_count($token, '"')%2 == 0))
 				{
 					return $token;
 				}
+			    // If it's an error code
+			    elseif (preg_match("/^#[A-Z0\/]{3,5}[!?]{1}$/", $token) or $token == '#N/A')
+			    {
+			        return $token;
+			    }
 				// if it's a function call
 				elseif (preg_match("/^[A-Z0-9\xc0-\xdc\.]+$/i",$token) and ($this->_lookahead == "("))
 				{
@@ -1265,6 +1273,10 @@ class PHPExcel_Writer_Excel5_Parser
 			$this->_advance();
 			$result2 = $this->_expression();
 			$result = $this->_createTree('ptgNE', $result, $result2);
+		} elseif ($this->_current_token == "&") {
+		    $this->_advance();
+		    $result2 = $this->_expression();
+		    $result = $this->_createTree('ptgConcat', $result, $result2);
 		}
 		return $result;
 	}
@@ -1273,7 +1285,9 @@ class PHPExcel_Writer_Excel5_Parser
 	 * It parses a expression. It assumes the following rule:
 	 * Expr -> Term [("+" | "-") Term]
 	 *      -> "string"
-	 *      -> "-" Term
+	 *      -> "-" Term : Negative value
+	 *      -> "+" Term : Positive value
+	 *      -> Error code
 	 *
 	 * @access private
 	 * @return mixed The parsed ptg'd tree on success
@@ -1281,16 +1295,23 @@ class PHPExcel_Writer_Excel5_Parser
 	function _expression()
 	{
 		// If it's a string return a string node
-		if (preg_match("/^\"[^\"]{0,255}\"$/", $this->_current_token)) {
-			$result = $this->_createTree($this->_current_token, '', '');
+		if (preg_match("/\"([^\"]|\"\"){0,255}\"/", $this->_current_token)) {
+			$result = $this->_createTree(str_replace('""', '"', $this->_current_token), '', '');
 			$this->_advance();
 			return $result;
-		} elseif ($this->_current_token == "-") {
+        // If it's an error code
+        } elseif (preg_match("/^#[A-Z0\/]{3,5}[!?]{1}$/", $this->_current_token) or $this->_current_token == '#N/A'){
+		    $result = $this->_createTree($this->_current_token, 'ptgErr', '');
+		    $this->_advance();
+		    return $result;
+		// If it's a negative value
+        } elseif ($this->_current_token == "-") {
 			// catch "-" Term
 			$this->_advance();
 			$result2 = $this->_expression();
 			$result = $this->_createTree('ptgUminus', $result2, '');
 			return $result;
+        // If it's a positive value
 		} elseif ($this->_current_token == "+") {
 			// catch "+" Term
 			$this->_advance();
@@ -1430,11 +1451,16 @@ class PHPExcel_Writer_Excel5_Parser
 			$this->_advance();
 			return $result;
 		}
+		// If it's a number or a percent
 		elseif (is_numeric($this->_current_token))
 		{
-			$result = $this->_createTree($this->_current_token, '', '');
-			$this->_advance();
-			return $result;
+		    if($this->_lookahead == '%'){
+		        $result = $this->_createTree('ptgPercent', $this->_current_token, '');
+		    } else {
+		        $result = $this->_createTree($this->_current_token, '', '');
+		    }
+		    $this->_advance();
+		    return $result;
 		}
 		// if it's a function call
 		elseif (preg_match("/^[A-Z0-9\xc0-\xdc\.]+$/i",$this->_current_token))
