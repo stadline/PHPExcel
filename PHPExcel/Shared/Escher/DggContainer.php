@@ -70,6 +70,13 @@ class PHPExcel_Shared_Escher_DggContainer
 	private $_OPT = array();
 
 	/**
+	 * Array of identifier clusters containg information about the maximum shape identifiers
+	 *
+	 * @var array
+	 */
+	private $_IDCLs = array();
+
+	/**
 	 * Get maximum shape index of all shapes in all drawings (plus one)
 	 *
 	 * @return int
@@ -174,4 +181,23 @@ class PHPExcel_Shared_Escher_DggContainer
 		return null;
 	}
 
+	/**
+	 * Get identifier clusters
+	 *
+	 * @return array
+	 */
+	public function getIDCLs()
+	{
+		return $this->_IDCLs;
+	}
+
+	/**
+	 * Set identifier clusters. array(<drawingId> => <max shape id>, ...)
+	 *
+	 * @param array $pValue
+	 */
+	public function setIDCLs($pValue)
+	{
+		$this->_IDCLs = $pValue;
+	}
 }

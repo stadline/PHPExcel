@@ -1148,6 +1148,9 @@ class PHPExcel_Writer_Excel5_Parser
 			case "<>":
 				return $token;
 				break;
+			case "^":
+				return $token;
+				break;
 			default:
 				// if it's a reference A1 or $A$1 or $A1 or A$1
 				if (preg_match('/^\$?[A-Ia-i]?[A-Za-z]\$?[0-9]+$/',$token) and
@@ -1288,19 +1291,30 @@ class PHPExcel_Writer_Excel5_Parser
 			$result2 = $this->_expression();
 			$result = $this->_createTree('ptgUminus', $result2, '');
 			return $result;
+		} elseif ($this->_current_token == "+") {
+			// catch "+" Term
+			$this->_advance();
+			$result2 = $this->_expression();
+			$result = $this->_createTree('ptgUplus', $result2, '');
+			return $result;
 		}
 		$result = $this->_term();
 		while (($this->_current_token == "+") or
-			   ($this->_current_token == "-")) {
+			   ($this->_current_token == "-") or
+			   ($this->_current_token == "^")) {
 		/**/
 			if ($this->_current_token == "+") {
 				$this->_advance();
 				$result2 = $this->_term();
 				$result = $this->_createTree('ptgAdd', $result, $result2);
-			} else {
+			} elseif ($this->_current_token == "-") {
 				$this->_advance();
 				$result2 = $this->_term();
 				$result = $this->_createTree('ptgSub', $result, $result2);
+			} else {
+				$this->_advance();
+				$result2 = $this->_term();
+				$result = $this->_createTree('ptgPower', $result, $result2);
 			}
 		}
 		return $result;

@@ -106,6 +106,8 @@ class PHPExcel_Writer_CSV implements PHPExcel_Writer_IWriter {
 		// Fetch sheet
 		$sheet = $this->_phpExcel->getSheet($this->_sheetIndex);
 
+		$saveDebugLog = PHPExcel_Calculation::getInstance()->writeDebugLog;
+		PHPExcel_Calculation::getInstance()->writeDebugLog = false;
 		$saveArrayReturnType = PHPExcel_Calculation::getArrayReturnType();
 		PHPExcel_Calculation::setArrayReturnType(PHPExcel_Calculation::RETURN_ARRAY_AS_VALUE);
 
@@ -132,6 +134,7 @@ class PHPExcel_Writer_CSV implements PHPExcel_Writer_IWriter {
 		fclose($fileHandle);
 
 		PHPExcel_Calculation::setArrayReturnType($saveArrayReturnType);
+		PHPExcel_Calculation::getInstance()->writeDebugLog = $saveDebugLog;
 	}
 
 	/**

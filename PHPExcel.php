@@ -434,7 +434,7 @@ class PHPExcel
 
 		// update the cellXfs
 		foreach ($pSheet->getCellCollection(false) as $cellID) {
-			$cell = $sheet->getCell($cellID);
+			$cell = $pSheet->getCell($cellID);
 			$cell->setXfIndex( $cell->getXfIndex() + $countCellXfs );
 		}
 

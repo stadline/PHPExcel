@@ -372,7 +372,7 @@ class PHPExcel_Style_Border implements PHPExcel_IComparable
 	public function __clone() {
 		$vars = get_object_vars($this);
 		foreach ($vars as $key => $value) {
-			if (is_object($value)) {
+			if ((is_object($value)) && ($key != '_parent')) {
 				$this->$key = clone $value;
 			} else {
 				$this->$key = $value;

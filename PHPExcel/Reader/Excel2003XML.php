@@ -557,6 +557,11 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 					$cellDataFormula = '';
 					if (isset($cell_ss['Formula'])) {
 						$cellDataFormula = $cell_ss['Formula'];
+						// added this as a check for array formulas
+						if (isset($cell_ss['ArrayRange'])) {
+							$cellDataCSEFormula = $cell_ss['ArrayRange'];
+//							echo "found an array formula at ".$columnID.$rowID."<br />";
+						}
 						$hasCalculatedValue = true;
 					}
 					if (isset($cell->Data)) {

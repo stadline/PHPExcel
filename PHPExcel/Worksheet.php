@@ -411,15 +411,14 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 	 */
 	public function getCellCollection($pSorted = true)
 	{
-		if (is_null($this->_cellCollection)) {
-			return array();
-		}
 		if ($pSorted) {
 			// Re-order cell collection
-			$this->sortCellCollection();
+			return $this->sortCellCollection();
 		}
-
-		return $this->_cellCollection->getCellList();
+		if (!is_null($this->_cellCollection)) {
+			return $this->_cellCollection->getCellList();
+		}
+		return array();
 	}
 
 	/**
@@ -429,13 +428,10 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 	 */
 	public function sortCellCollection()
 	{
-		if (!$this->_cellCollectionIsSorted) {
-			if (!is_null($this->_cellCollection)) {
-				$this->_cellCollection->sortCellList();
+		if (!is_null($this->_cellCollection)) {
+			return $this->_cellCollection->getSortedCellList();
 			}
-			$this->_cellCollectionIsSorted = true;
-		}
-		return $this;
+		return array();
 	}
 
 	/**
@@ -2184,9 +2180,8 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 		$highestRow    = 1;
 
     	// Find cells that can be cleaned
-    	foreach ($this->_cellCollection->getCellList() as $coordinate) {
-			preg_match('/^(\w+)(\d+)$/U',$coordinate,$matches);
-			list(,$col,$row) = $matches;
+    	foreach ($this->_cellCollection->getCellList() as $coord) {
+			list($col,$row) = sscanf($coord,'%[A-Z]%d');
 			$column = PHPExcel_Cell::columnIndexFromString($col);
 
 			// Determine highest column and row
@@ -2472,7 +2467,13 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 			}
 
 			if (is_object($val) || (is_array($val))) {
-				$this->{$key} = unserialize(serialize($val));
+				if ($key == '_cellCollection') {
+					$newCollection = clone $this->_cellCollection;
+					$newCollection->copyCellCollection($this);
+					$this->_cellCollection = $newCollection;
+				} else {
+					$this->{$key} = unserialize(serialize($val));
+				}
 			}
 		}
 	}

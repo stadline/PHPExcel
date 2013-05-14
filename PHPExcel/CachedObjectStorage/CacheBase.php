@@ -116,7 +116,7 @@ class PHPExcel_CachedObjectStorage_CacheBase {
 			$this->_currentObjectID = $this->_currentObject = null;
 		}
 
-		if (isset($this->_cellCache[$pCoord])) {
+		if (is_object($this->_cellCache[$pCoord])) {
 			$this->_cellCache[$pCoord]->detach();
 			unset($this->_cellCache[$pCoord]);
 		}
@@ -138,14 +138,37 @@ class PHPExcel_CachedObjectStorage_CacheBase {
 	 *
 	 *	@return	void
 	 */
-	public function sortCellList() {
+	public function getSortedCellList() {
 		$sortKeys = array();
 		foreach ($this->_cellCache as $coord => $value) {
-			preg_match('/^(\w+)(\d+)$/U',$coord,$matches);
-			list(,$colNum,$rowNum) = $matches;
-			$sortKeys[$coord] =  str_pad($rowNum . str_pad($colNum,3,'@',STR_PAD_LEFT),12,'0',STR_PAD_LEFT);
+			list($colNum,$rowNum) = sscanf($coord,'%[A-Z]%d');
+			$sortKeys[sprintf('%09d%3s',$rowNum,$colNum)] = $coord;
 		}
-		array_multisort($sortKeys,SORT_DESC,SORT_STRING,$this->_cellCache);
+		ksort($sortKeys);
+
+		return array_values($sortKeys);
 	}	//	function sortCellList()
+
+
+	protected function _getUniqueID() {
+		if (function_exists('posix_getpid')) {
+			$baseUnique = posix_getpid();
+		} else {
+			$baseUnique = mt_rand();
+		}
+		return uniqid($baseUnique,true);
+	}
+
+	/**
+	 *	Clone the cell collection
+	 *
+	 *	@return	void
+	 */
+	public function copyCellCollection(PHPExcel_Worksheet $parent) {
+		$this->_parent = $parent;
+		if ((!is_null($this->_currentObject)) && (is_object($this->_currentObject))) {
+			$this->_currentObject->attach($parent);
+		}
+	}	//	function copyCellCollection()
 
 }
