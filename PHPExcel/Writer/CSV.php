@@ -26,27 +26,6 @@
  */
 
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
-}
-
-/** PHPExcel_IWriter */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Writer/IWriter.php';
-
-/** PHPExcel_Cell */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Cell.php';
-
-/** PHPExcel_RichText */
-require_once PHPEXCEL_ROOT . 'PHPExcel/RichText.php';
-
-/** PHPExcel_Shared_String */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/String.php';
-
-
 /**
  * PHPExcel_Writer_CSV
  *

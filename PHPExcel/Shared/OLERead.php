@@ -214,6 +214,58 @@ class PHPExcel_Shared_OLERead {
 	}
 
 	/**
+	 * Extract binary stream data, summary information
+	 *
+	 * @return string|null
+	 */
+	public function getSummaryInformation()
+	{
+		if (!isset($this->summaryInformation)) {
+			return null;
+		}
+
+		if ($this->props[$this->summaryInformation]['size'] < self::SMALL_BLOCK_THRESHOLD){
+			$rootdata = $this->_readData($this->props[$this->rootentry]['startBlock']);
+
+			$streamData = '';
+			$block = $this->props[$this->summaryInformation]['startBlock'];
+
+			$pos = 0;
+			while ($block != -2) {
+	  			$pos = $block * self::SMALL_BLOCK_SIZE;
+				$streamData .= substr($rootdata, $pos, self::SMALL_BLOCK_SIZE);
+
+				$block = $this->smallBlockChain[$block];
+			}
+
+			return $streamData;
+
+
+		} else {
+			$numBlocks = $this->props[$this->summaryInformation]['size'] / self::BIG_BLOCK_SIZE;
+			if ($this->props[$this->summaryInformation]['size'] % self::BIG_BLOCK_SIZE != 0) {
+				++$numBlocks;
+			}
+
+			if ($numBlocks == 0) return '';
+
+
+			$streamData = '';
+			$block = $this->props[$this->summaryInformation]['startBlock'];
+
+			$pos = 0;
+
+			while ($block != -2) {
+				$pos = ($block + 1) * self::BIG_BLOCK_SIZE;
+				$streamData .= substr($this->data, $pos, self::BIG_BLOCK_SIZE);
+				$block = $this->bigBlockChain[$block];
+			}
+
+			return $streamData;
+		}
+	}
+
+	/**
 	 * Read a standard stream (by joining sectors using information from SAT)
 	 *
 	 * @param int $bl Sector ID where the stream starts
@@ -278,6 +330,11 @@ class PHPExcel_Shared_OLERead {
 			// Root entry
 			if ($name == 'Root Entry' || $name == 'ROOT ENTRY' || $name == 'R') {
 				$this->rootentry = count($this->props) - 1;
+			}
+
+			// Summary information
+			if ($name == chr(5) . 'SummaryInformation') {
+				$this->summaryInformation = count($this->props) - 1;
 			}
 
 			$offset += self::PROPERTY_STORAGE_BLOCK_SIZE;

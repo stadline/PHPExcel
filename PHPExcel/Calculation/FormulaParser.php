@@ -49,17 +49,6 @@ PARTLY BASED ON:
 	http://ewbi.blogs.com/develops/2004/12/excel_formula_p.html
 */
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
-}
-
-/** PHPExcel_Calculation_FormulaToken */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Calculation/FormulaToken.php';
-
 /**
  * PHPExcel_Calculation_FormulaParser
  *

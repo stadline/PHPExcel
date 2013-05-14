@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -32,11 +32,14 @@ if (!defined('PHPEXCEL_ROOT')) {
 	 * @ignore
 	 */
 	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
+	require(PHPEXCEL_ROOT . 'PHPExcel/Autoloader.php');
+	PHPExcel_Autoloader::Register();
+	PHPExcel_Shared_ZipStreamWrapper::register();
+	// check mbstring.func_overload
+	if (ini_get('mbstring.func_overload') & 2) {
+		throw new Exception('Multibyte function overloading in PHP must be disabled for string functions (2).');
+	}
 }
-
-/** PHPExcel_Reader_IReadFilter */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Reader/IReadFilter.php';
- 
 
 /**
  * PHPExcel_Reader_DefaultReadFilter
@@ -54,7 +57,7 @@ class PHPExcel_Reader_DefaultReadFilter implements PHPExcel_Reader_IReadFilter
 	 * @param 	$row			Row index
 	 * @param	$worksheetName	Optional worksheet name
 	 * @return	boolean
-	 */	
+	 */
 	public function readCell($column, $row, $worksheetName = '') {
 		return true;
 	}

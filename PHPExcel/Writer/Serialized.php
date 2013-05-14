@@ -26,33 +26,6 @@
  */
 
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
-}
-
-/** PHPExcel */
-require_once PHPEXCEL_ROOT . 'PHPExcel.php';
-
-/** PHPExcel_HashTable */
-require_once PHPEXCEL_ROOT . 'PHPExcel/HashTable.php';
-
-/** PHPExcel_IComparable */
-require_once PHPEXCEL_ROOT . 'PHPExcel/IComparable.php';
-
-/** PHPExcel_Worksheet */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Worksheet.php';
-
-/** PHPExcel_Cell */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Cell.php';
-
-/** PHPExcel_IWriter */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Writer/IWriter.php';
-
-
 /**
  * PHPExcel_Writer_Serialized
  *

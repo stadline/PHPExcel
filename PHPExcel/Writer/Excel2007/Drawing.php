@@ -26,45 +26,6 @@
  */
 
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../../');
-}
-
-/** PHPExcel */
-require_once PHPEXCEL_ROOT . 'PHPExcel.php';
-
-/** PHPExcel_Writer_Excel2007 */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Writer/Excel2007.php';
-
-/** PHPExcel_Writer_Excel2007_WriterPart */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Writer/Excel2007/WriterPart.php';
-
-/** PHPExcel_Worksheet_BaseDrawing */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Worksheet/BaseDrawing.php';
-
-/** PHPExcel_Worksheet_Drawing */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Worksheet/Drawing.php';
-
-/** PHPExcel_Worksheet_MemoryDrawing */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Worksheet/MemoryDrawing.php';
-
-/** PHPExcel_Worksheet */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Worksheet.php';
-
-/** PHPExcel_Cell */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Cell.php';
-
-/** PHPExcel_Shared_Drawing */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/Drawing.php';
-
-/** PHPExcel_Shared_XMLWriter */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/XMLWriter.php';
-
-
 /**
  * PHPExcel_Writer_Excel2007_Drawing
  *
@@ -204,23 +165,23 @@ class PHPExcel_Writer_Excel2007_Drawing extends PHPExcel_Writer_Excel2007_Writer
 
 						$objWriter->endElement();
 
-						// a:solidFill
-						$objWriter->startElement('a:solidFill');
+//						// a:solidFill
+//						$objWriter->startElement('a:solidFill');
 
-							// a:srgbClr
-							$objWriter->startElement('a:srgbClr');
-							$objWriter->writeAttribute('val', 'FFFFFF');
+//							// a:srgbClr
+//							$objWriter->startElement('a:srgbClr');
+//							$objWriter->writeAttribute('val', 'FFFFFF');
 
-/* SHADE
-								// a:shade
-								$objWriter->startElement('a:shade');
-								$objWriter->writeAttribute('val', '85000');
-								$objWriter->endElement();
-*/
+///* SHADE
+//								// a:shade
+//								$objWriter->startElement('a:shade');
+//								$objWriter->writeAttribute('val', '85000');
+//								$objWriter->endElement();
+//*/
 
-							$objWriter->endElement();
+//							$objWriter->endElement();
 
-						$objWriter->endElement();
+//						$objWriter->endElement();
 /*
 						// a:ln
 						$objWriter->startElement('a:ln');

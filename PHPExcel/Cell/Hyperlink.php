@@ -36,13 +36,6 @@
 class PHPExcel_Cell_Hyperlink
 {
 	/**
-	 * Cell representing the hyperlink
-	 *
-	 * @var PHPExcel_Cell
-	 */
-	private $_cell;
-	
-	/**
 	 * URL to link the cell to
 	 *
 	 * @var string
@@ -59,19 +52,15 @@ class PHPExcel_Cell_Hyperlink
     /**
      * Create a new PHPExcel_Cell_Hyperlink
      *
-     * @param 	PHPExcel_Cell		$pCell		Parent cell
      * @param 	string				$pUrl		Url to link the cell to
      * @param	string				$pTooltip	Tooltip to display on the hyperlink
      * @throws	Exception
      */
-    public function __construct(PHPExcel_Cell $pCell = null, $pUrl = '', $pTooltip = '')
+    public function __construct($pUrl = '', $pTooltip = '')
     {
     	// Initialise member variables
 		$this->_url 		= $pUrl;
 		$this->_tooltip 	= $pTooltip;
- 	
-    	// Set cell
-    	$this->_parent 		= $pCell;
     }
 	
 	/**
@@ -123,26 +112,6 @@ class PHPExcel_Cell_Hyperlink
 		return strpos($this->_url, 'sheet://') !== false;
 	}
 	
-    /**
-     * Get parent
-     *
-     * @return PHPExcel_Cell
-     */
-    public function getParent() {
-    	return $this->_parent;
-    }
-    
-	/**
-	 * Set Parent
-	 *
-	 * @param	PHPExcel_Cell	$value
-	 * @return PHPExcel_Cell_Hyperlink
-	 */
-	public function setParent($value = null) {
-		$this->_parent = $value;
-		return $this;
-	}
-	
 	/**
 	 * Get hash code
 	 *
@@ -152,7 +121,6 @@ class PHPExcel_Cell_Hyperlink
     	return md5(
     		  $this->_url
     		. $this->_tooltip
-    		. $this->_parent->getCoordinate()
     		. __CLASS__
     	);
     }

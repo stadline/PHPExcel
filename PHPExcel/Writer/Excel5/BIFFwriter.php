@@ -73,7 +73,7 @@ class PHPExcel_Writer_Excel5_BIFFwriter
 	 * The BIFF/Excel version (5).
 	 * @var integer
 	 */
-	var $_BIFF_version = 0x0500;
+	public $_BIFF_version = 0x0500;
 
 	/**
 	 * The byte order of this architecture. 0 => little endian, 1 => big endian
@@ -85,20 +85,20 @@ class PHPExcel_Writer_Excel5_BIFFwriter
 	 * The string containing the data of the BIFF stream
 	 * @var string
 	 */
-	var $_data;
+	public $_data;
 
 	/**
 	 * The size of the data in bytes. Should be the same as strlen($this->_data)
 	 * @var integer
 	 */
-	var $_datasize;
+	public $_datasize;
 
 	/**
 	 * The maximum length for a BIFF record (excluding record header and length field). See _addContinue()
 	 * @var integer
 	 * @see _addContinue()
 	 */
-	var $_limit;
+	public $_limit;
 
 	/**
 	 * Constructor

@@ -26,34 +26,16 @@
  */
 
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
-}
-
-/** PHPExcel */
-require_once PHPEXCEL_ROOT . 'PHPExcel.php';
-
-/** PHPExcel_Worksheet */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Worksheet.php';
-
-/** PHPExcel_Worksheet_Row */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Worksheet/Row.php';
-
-
 /**
  * PHPExcel_Worksheet_RowIterator
- * 
+ *
  * Used to iterate rows in a PHPExcel_Worksheet
  *
  * @category   PHPExcel
  * @package    PHPExcel_Worksheet
  * @copyright  Copyright (c) 2006 - 2010 PHPExcel (http://www.codeplex.com/PHPExcel)
  */
-class PHPExcel_Worksheet_RowIterator extends IteratorIterator
+class PHPExcel_Worksheet_RowIterator extends CachingIterator
 {
 	/**
 	 * PHPExcel_Worksheet to iterate
@@ -61,13 +43,13 @@ class PHPExcel_Worksheet_RowIterator extends IteratorIterator
 	 * @var PHPExcel_Worksheet
 	 */
 	private $_subject;
-	
+
 	/**
 	 * Current iterator position
 	 *
 	 * @var int
 	 */
-	private $_position = 0;
+	private $_position = 1;
 
 	/**
 	 * Create a new row iterator
@@ -78,14 +60,14 @@ class PHPExcel_Worksheet_RowIterator extends IteratorIterator
 		// Set subject
 		$this->_subject = $subject;
 	}
-	
+
 	/**
 	 * Destructor
 	 */
 	public function __destruct() {
 		unset($this->_subject);
 	}
-	
+
 	/**
 	 * Rewind iterator
 	 */

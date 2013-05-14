@@ -26,14 +26,6 @@
  */
 
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../../');
-}
-
 require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/bestFitClass.php';
 require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/JAMA/Matrix.php';
 

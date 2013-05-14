@@ -25,21 +25,6 @@
  * @version    ##VERSION##, ##DATE##
  */
 
- 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../../');
-}
-
-/** PHPExcel_Shared_String */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/String.php';
-
-/** PHPExcel_Style_Font */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Style/Font.php';
-
 
 /**
  * PHPExcel_Writer_Excel5_Font

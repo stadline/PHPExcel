@@ -25,23 +25,6 @@
  * @version    ##VERSION##, ##DATE##
  */
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
-}
-
-/** PHPExcel_Cell */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Cell.php';
-
-/** PHPExcel_Shared_Drawing */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/Drawing.php';
-
-/** PHPExcel_Shared_Font */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/Font.php';
-
 /**
  * PHPExcel_Shared_Excel5
  *
@@ -264,7 +247,7 @@ class PHPExcel_Shared_Excel5
 		list($column, $row) = PHPExcel_Cell::coordinateFromString($coordinates);
 		$col_start = PHPExcel_Cell::columnIndexFromString($column) - 1;
 		$row_start = $row - 1;
-		
+
 		$x1 = $offsetX;
 		$y1 = $offsetY;
 

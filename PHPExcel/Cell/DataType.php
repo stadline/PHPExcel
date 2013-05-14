@@ -26,18 +26,6 @@
  */
 
 
-/** PHPExcel root directory */
-if (!defined('PHPEXCEL_ROOT')) {
-	/**
-	 * @ignore
-	 */
-	define('PHPEXCEL_ROOT', dirname(__FILE__) . '/../../');
-}
-
-/** PHPExcel_Cell_DefaultValueBinder */
-require_once PHPEXCEL_ROOT . 'PHPExcel/Cell/DefaultValueBinder.php';
-
-
 /**
  * PHPExcel_Cell_DataType
  *
@@ -71,7 +59,7 @@ class PHPExcel_Cell_DataType
 	public static function getErrorCodes() {
 		return self::$_errorCodes;
 	}
-	
+
 	/**
 	 * DataType for value
 	 *
