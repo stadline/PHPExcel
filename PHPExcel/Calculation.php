@@ -3093,6 +3093,7 @@ class PHPExcel_Calculation {
 							if (!is_null($pCellParent)) {
 								if ($pCellParent->getParent()->getSheetByName($matches[2])->cellExists($cellRef)) {
 									$cellValue = $this->extractCellRange($cellRef, $pCellParent->getParent()->getSheetByName($matches[2]), false);
+									$pCell->attach($pCellParent);
 								} else {
 									$cellValue = PHPExcel_Calculation_Functions::REF();
 								}
@@ -3106,6 +3107,7 @@ class PHPExcel_Calculation {
 							$this->_writeDebug('Evaluating Cell '.$cellRef.' in current worksheet');
 							if ($pCellParent->cellExists($cellRef)) {
 								$cellValue = $this->extractCellRange($cellRef, $pCellParent, false);
+								$pCell->attach($pCellParent);
 							} else {
 								$cellValue = NULL;
 							}
@@ -3228,6 +3230,7 @@ class PHPExcel_Calculation {
 //					echo 'Named Range is '.$namedRange.'<br />';
 					$this->_writeDebug('Evaluating Named Range '.$namedRange);
 					$cellValue = $this->extractNamedRange($namedRange, ((null !== $pCell) ? $pCellParent : null), false);
+					$pCell->attach($pCellParent);
 					$this->_writeDebug('Evaluation Result for named range '.$namedRange.' is '.self::_showTypeDetails($cellValue));
 					$stack->push('Named Range',$cellValue,$namedRange);
 				} else {

@@ -162,7 +162,6 @@ class PHPExcel_Shared_OLERead {
 		$this->entry = $this->_readData($block);
 
 		$this->_readPropertySets();
-
 	}
 
 	/**
@@ -323,7 +322,7 @@ class PHPExcel_Shared_OLERead {
 				'size' => $size);
 
 			// Workbook directory entry (BIFF5 uses Book, BIFF8 uses Workbook)
-			if (($name == 'Workbook') || ($name == 'Book') || ($name == 'WORKBOOK')) {
+			if (($name == 'Workbook') || ($name == 'Book') || ($name == 'WORKBOOK') || ($name == 'BOOK')) {
 				$this->wrkbook = count($this->props) - 1;
 			}
 

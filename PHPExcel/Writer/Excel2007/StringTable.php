@@ -60,8 +60,7 @@ class PHPExcel_Writer_Excel2007_StringTable extends PHPExcel_Writer_Excel2007_Wr
 			$aFlippedStringTable = $this->flipStringTable($aStringTable);
 
 	        // Loop through cells
-	        $cellCollection = $pSheet->getCellCollection();
-	        foreach ($cellCollection as $cellID) {
+	        foreach ($pSheet->getCellCollection() as $cellID) {
 				$cell = $pSheet->getCell($cellID);
 	        	if (!is_object($cell->getValue()) &&
 	        		!isset($aFlippedStringTable[$cell->getValue()]) &&

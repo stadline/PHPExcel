@@ -134,29 +134,18 @@ class PHPExcel_CachedObjectStorage_CacheBase {
 
 
 	/**
-	 *	Sort the list of all cell addresses currently held in cache by column and row
+	 *	Sort the list of all cell addresses currently held in cache by row and column
 	 *
 	 *	@return	void
 	 */
 	public function sortCellList() {
-		$sortValues = array();
+		$sortKeys = array();
 		foreach ($this->_cellCache as $coord => $value) {
 			preg_match('/^(\w+)(\d+)$/U',$coord,$matches);
 			list(,$colNum,$rowNum) = $matches;
-
-			$key =  str_pad($rowNum . str_pad($colNum,3,'@',STR_PAD_LEFT),12,'0',STR_PAD_LEFT);
-
-			$sortValues[$key] = $coord;
+			$sortKeys[$coord] =  str_pad($rowNum . str_pad($colNum,3,'@',STR_PAD_LEFT),12,'0',STR_PAD_LEFT);
 		}
-		ksort($sortValues);
-
-		// Rebuild cellCollection from the sorted index
-		$newCellCollection = array();
-	    foreach ($sortValues as $coord) {
-	        $newCellCollection[$coord] = $this->_cellCache[$coord];
-		}
-
-		$this->_cellCache = $newCellCollection;
+		array_multisort($sortKeys,SORT_DESC,SORT_STRING,$this->_cellCache);
 	}	//	function sortCellList()
 
 }

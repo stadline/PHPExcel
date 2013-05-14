@@ -268,7 +268,7 @@ class PHPExcel_Writer_Excel5_Worksheet extends PHPExcel_Writer_Excel5_BIFFwriter
 	 */
 	function close()
 	{
-		$num_sheets = count($this->_phpSheet->getParent()->getAllSheets());
+		$num_sheets = $this->_phpSheet->getParent()->getSheetCount();
 
 		// Write BOF record
 		$this->_storeBof(0x0010);
