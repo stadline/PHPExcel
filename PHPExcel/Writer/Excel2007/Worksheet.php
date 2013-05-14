@@ -1002,7 +1002,18 @@ class PHPExcel_Writer_Excel2007_Worksheet extends PHPExcel_Writer_Excel2007_Writ
 
 						break;
 					case 'f':			// Formula
-						$objWriter->writeElement('f', substr($pCell->getValue(), 1));
+						$attributes = $pCell->getFormulaAttributes();
+						if($attributes['t'] == 'array') {
+							$objWriter->startElement('f');
+							$objWriter->writeAttribute('t', 'array');
+							$objWriter->writeAttribute('ref', $pCell->getCoordinate());
+							$objWriter->writeAttribute('aca', '1');
+							$objWriter->writeAttribute('ca', '1');
+							$objWriter->text(substr($pCell->getValue(), 1));
+							$objWriter->endElement();
+						} else {
+							$objWriter->writeElement('f', substr($pCell->getValue(), 1));
+						}
 						if ($this->getParentWriter()->getOffice2003Compatibility() === false) {
 							if ($this->getParentWriter()->getPreCalculateFormulas()) {
 								$calculatedValue = $pCell->getCalculatedValue();

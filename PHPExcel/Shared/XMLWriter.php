@@ -29,6 +29,11 @@ if (!defined('DATE_W3C')) {
   define('DATE_W3C', 'Y-m-d\TH:i:sP');
 }
 
+if (!defined('DEBUGMODE_ENABLED')) {
+  define('DEBUGMODE_ENABLED', false);
+}
+
+
 /**
  * PHPExcel_Shared_XMLWriter
  *
@@ -80,7 +85,9 @@ class PHPExcel_Shared_XMLWriter {
     	}
 
     	// Set default values
-    	$this->_xmlWriter->setIndent(true);
+		if (DEBUGMODE_ENABLED) {
+	    	$this->_xmlWriter->setIndent(true);
+	    }
     }
 
     /**

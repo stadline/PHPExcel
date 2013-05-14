@@ -443,7 +443,7 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 	{
 		$vars = get_object_vars($this);
 		foreach ($vars as $key => $value) {
-			if (is_object($value)) {
+			if ((is_object($value)) && ($key != '_parent')) {
 				$this->$key = clone $value;
 			} else {
 				$this->$key = $value;

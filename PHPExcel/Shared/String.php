@@ -507,17 +507,17 @@ class PHPExcel_Shared_String
 	 * @author  Rasmus Andersson {@link http://rasmusandersson.se/}
 	 * @author vadik56
 	 */
-	function utf16_decode( $str, $bom_be=true ) {
+	public static function utf16_decode( $str, $bom_be=true ) {
 		if( strlen($str) < 2 ) return $str;
-		$c0 = ord($str{0});
-		$c1 = ord($str{1});
+		$c0 = ord($str[0]);
+		$c1 = ord($str[1]);
 		if( $c0 == 0xfe && $c1 == 0xff ) { $str = substr($str,2); }
 		elseif( $c0 == 0xff && $c1 == 0xfe ) { $str = substr($str,2); $bom_be = false; }
 		$len = strlen($str);
 		$newstr = '';
 		for($i=0;$i<$len;$i+=2) {
-			if( $bom_be ) { $val = ord($str{$i})   << 4; $val += ord($str{$i+1}); }
-			else {        $val = ord($str{$i+1}) << 4; $val += ord($str{$i}); }
+			if( $bom_be ) { $val = ord($str[$i])   << 4; $val += ord($str[$i+1]); }
+			else {        $val = ord($str[$i+1]) << 4; $val += ord($str[$i]); }
 			$newstr .= ($val == 0x228) ? "\n" : chr($val);
 		}
 		return $newstr;
@@ -558,7 +558,7 @@ class PHPExcel_Shared_String
 	public static function Substring($pValue = '', $pStart = 0, $pLength = 0)
 	{
 		if (self::getIsIconvEnabled()) {
-			$string = iconv_substr($pValue, $pStart, $pLength, 'UTF-8');
+			$string = iconv_substr($pValue ?: '', $pStart, $pLength, 'UTF-8');
 			return $string;
 		}
 

@@ -88,10 +88,17 @@ interface PHPExcel_CachedObjectStorage_ICache
 	public function getCellList();
 
 	/**
-	 *	Sort the list of all cell addresses currently held in cache by column and row
+	 *	Get the list of all cell addresses currently held in cache sorted by column and row
 	 *
 	 *	@return	void
 	 */
-	public function sortCellList();
+	public function getSortedCellList();
+
+	/**
+	 *	Clone the cell collection
+	 *
+	 *	@return	void
+	 */
+	public function copyCellCollection(PHPExcel_Worksheet $parent);
 
 }

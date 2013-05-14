@@ -596,7 +596,7 @@ class PHPExcel_Calculation_Functions {
 	 *	ATAN2
 	 *
 	 *	This function calculates the arc tangent of the two variables x and y. It is similar to
-	 *		calculating the arc tangent of y ÷ x, except that the signs of both arguments are used
+	 *		calculating the arc tangent of y ï¿½ x, except that the signs of both arguments are used
 	 *		to determine the quadrant of the result.
 	 *	The arctangent is the angle from the x-axis to a line containing the origin (0, 0) and a
 	 *		point with coordinates (xCoordinate, yCoordinate). The angle is given in radians between
@@ -1027,7 +1027,7 @@ class PHPExcel_Calculation_Functions {
 
 	private static function _ifCondition($condition) {
 		$condition	= self::flattenSingleValue($condition);
-		if (!in_array($condition{0},array('>', '<', '='))) {
+		if (!in_array($condition[0],array('>', '<', '='))) {
 			if (!is_numeric($condition)) { $condition = PHPExcel_Calculation::_wrapResult(strtoupper($condition)); }
 			return '='.$condition;
 		} else {
@@ -1885,7 +1885,7 @@ class PHPExcel_Calculation_Functions {
 			}
 
 			// Return
-			if (($aCount > 0) && ($returnValue > 0)) {
+			if (($aCount > 0) && ($returnValue >= 0)) {
 				return sqrt($returnValue / $aCount);
 			}
 		}
@@ -1937,7 +1937,7 @@ class PHPExcel_Calculation_Functions {
 			}
 
 			// Return
-			if (($aCount > 0) && ($returnValue > 0)) {
+			if (($aCount > 0) && ($returnValue >= 0)) {
 				return sqrt($returnValue / $aCount);
 			}
 		}
@@ -1984,7 +1984,7 @@ class PHPExcel_Calculation_Functions {
 			}
 
 			// Return
-			if (($aCount > 0) && ($returnValue > 0)) {
+			if (($aCount > 0) && ($returnValue >= 0)) {
 				return sqrt($returnValue / $aCount);
 			}
 		}
@@ -2036,7 +2036,7 @@ class PHPExcel_Calculation_Functions {
 			}
 
 			// Return
-			if (($aCount > 0) && ($returnValue > 0)) {
+			if (($aCount > 0) && ($returnValue >= 0)) {
 				return sqrt($returnValue / $aCount);
 			}
 		}
@@ -5111,19 +5111,19 @@ class PHPExcel_Calculation_Functions {
 
 
 	private static function _uniord($c) {
-		if (ord($c{0}) >=0 && ord($c{0}) <= 127)
-			return ord($c{0});
-		if (ord($c{0}) >= 192 && ord($c{0}) <= 223)
-			return (ord($c{0})-192)*64 + (ord($c{1})-128);
-		if (ord($c{0}) >= 224 && ord($c{0}) <= 239)
-			return (ord($c{0})-224)*4096 + (ord($c{1})-128)*64 + (ord($c{2})-128);
-		if (ord($c{0}) >= 240 && ord($c{0}) <= 247)
-			return (ord($c{0})-240)*262144 + (ord($c{1})-128)*4096 + (ord($c{2})-128)*64 + (ord($c{3})-128);
-		if (ord($c{0}) >= 248 && ord($c{0}) <= 251)
-			return (ord($c{0})-248)*16777216 + (ord($c{1})-128)*262144 + (ord($c{2})-128)*4096 + (ord($c{3})-128)*64 + (ord($c{4})-128);
-		if (ord($c{0}) >= 252 && ord($c{0}) <= 253)
-			return (ord($c{0})-252)*1073741824 + (ord($c{1})-128)*16777216 + (ord($c{2})-128)*262144 + (ord($c{3})-128)*4096 + (ord($c{4})-128)*64 + (ord($c{5})-128);
-		if (ord($c{0}) >= 254 && ord($c{0}) <= 255) //error
+		if (ord($c[0]) >=0 && ord($c[0]) <= 127)
+			return ord($c[0]);
+		if (ord($c[0]) >= 192 && ord($c[0]) <= 223)
+			return (ord($c[0])-192)*64 + (ord($c[1])-128);
+		if (ord($c[0]) >= 224 && ord($c[0]) <= 239)
+			return (ord($c[0])-224)*4096 + (ord($c[1])-128)*64 + (ord($c[2])-128);
+		if (ord($c[0]) >= 240 && ord($c[0]) <= 247)
+			return (ord($c[0])-240)*262144 + (ord($c[1])-128)*4096 + (ord($c[2])-128)*64 + (ord($c[3])-128);
+		if (ord($c[0]) >= 248 && ord($c[0]) <= 251)
+			return (ord($c[0])-248)*16777216 + (ord($c[1])-128)*262144 + (ord($c[2])-128)*4096 + (ord($c[3])-128)*64 + (ord($c[4])-128);
+		if (ord($c[0]) >= 252 && ord($c[0]) <= 253)
+			return (ord($c[0])-252)*1073741824 + (ord($c[1])-128)*16777216 + (ord($c[2])-128)*262144 + (ord($c[3])-128)*4096 + (ord($c[4])-128)*64 + (ord($c[5])-128);
+		if (ord($c[0]) >= 254 && ord($c[0]) <= 255) //error
 			return self::$_errorCodes['value'];
 		return 0;
 	}	//	function _uniord()
@@ -5369,7 +5369,7 @@ class PHPExcel_Calculation_Functions {
 	 *	@param	int		$chars	Number of characters
 	 *	@return	string
 	 */
-	public static function REPLACE($oldText = '', $start = 1, $chars = null, $newText) {
+	public static function REPLACE($oldText = '', $start = 1, $chars = null, $newText = '') {
 		$oldText	= self::flattenSingleValue($oldText);
 		$start		= self::flattenSingleValue($start);
 		$chars		= self::flattenSingleValue($chars);
@@ -7241,7 +7241,7 @@ class PHPExcel_Calculation_Functions {
 		//	Split the input into its Real and Imaginary components
 		$leadingSign = 0;
 		if (strlen($workString) > 0) {
-			$leadingSign = (($workString{0} == '+') || ($workString{0} == '-')) ? 1 : 0;
+			$leadingSign = (($workString[0] == '+') || ($workString[0] == '-')) ? 1 : 0;
 		}
 		$power = '';
 		$realNumber = strtok($workString, '+-');
@@ -7276,10 +7276,10 @@ class PHPExcel_Calculation_Functions {
 
 
 	private static function _cleanComplex($complexNumber) {
-		if ($complexNumber{0} == '+') $complexNumber = substr($complexNumber,1);
-		if ($complexNumber{0} == '0') $complexNumber = substr($complexNumber,1);
-		if ($complexNumber{0} == '.') $complexNumber = '0'.$complexNumber;
-		if ($complexNumber{0} == '+') $complexNumber = substr($complexNumber,1);
+		if ($complexNumber[0] == '+') $complexNumber = substr($complexNumber,1);
+		if ($complexNumber[0] == '0') $complexNumber = substr($complexNumber,1);
+		if ($complexNumber[0] == '.') $complexNumber = '0'.$complexNumber;
+		if ($complexNumber[0] == '+') $complexNumber = substr($complexNumber,1);
 		return $complexNumber;
 	}
 
@@ -11139,112 +11139,101 @@ class PHPExcel_Calculation_Functions {
 	 *	@return	integer			The relative position of the found item
 	 */
 	public static function MATCH($lookup_value, $lookup_array, $match_type=1) {
-
-		// flatten the lookup_array
 		$lookup_array = self::flattenArray($lookup_array);
-
-		// flatten lookup_value since it may be a cell reference to a value or the value itself
 		$lookup_value = self::flattenSingleValue($lookup_value);
-
-		// MATCH is not case sensitive
+		$match_type	= (is_null($match_type)) ? 1 : (int) self::flattenSingleValue($match_type);
+		//	MATCH is not case sensitive
 		$lookup_value = strtolower($lookup_value);
 
-		/*
-		echo "--------------------<br>looking for $lookup_value in <br>";
-		print_r($lookup_array);
-		echo "<br>";
-		//return 1;
-		/**/
-
-		// **
-		// check inputs
-		// **
-		// lookup_value type has to be number, text, or logical values
-		if (!is_numeric($lookup_value) && !is_string($lookup_value) && !is_bool($lookup_value)){
-			// error: lookup_array should contain only number, text, or logical values
-			//echo "error: lookup_array should contain only number, text, or logical values<br>";
+		//	lookup_value type has to be number, text, or logical values
+		if ((!is_numeric($lookup_value)) && (!is_string($lookup_value)) && (!is_bool($lookup_value))) {
 			return self::$_errorCodes['na'];
 		}
 
-		// match_type is 0, 1 or -1
-		if ($match_type!==0 && $match_type!==-1 && $match_type!==1){
-			// error: wrong value for match_type
-			//echo "error: wrong value for match_type<br>";
+		//	match_type is 0, 1 or -1
+		if (($match_type !== 0) && ($match_type !== -1) && ($match_type !== 1)) {
 			return self::$_errorCodes['na'];
 		}
 
-		// lookup_array should not be empty
-		if (sizeof($lookup_array)<=0){
-			// error: empty range
-			//echo "error: empty range ".sizeof($lookup_array)."<br>";
+		//	lookup_array should not be empty
+		$lookupArraySize = count($lookup_array);
+		if ($lookupArraySize <= 0) {
 			return self::$_errorCodes['na'];
 		}
 
-		// lookup_array should contain only number, text, or logical values
-		for ($i=0;$i<sizeof($lookup_array);++$i){
-			// check the type of the value
-			if (!is_numeric($lookup_array[$i]) && !is_string($lookup_array[$i]) && !is_bool($lookup_array[$i])){
-				// error: lookup_array should contain only number, text, or logical values
-				//echo "error: lookup_array should contain only number, text, or logical values<br>";
+		//	lookup_array should contain only number, text, or logical values, or empty (null) cells
+		foreach($lookup_array as $i => $lookupArrayValue) {
+			//	check the type of the value
+			if ((!is_numeric($lookupArrayValue)) && (!is_string($lookupArrayValue)) &&
+				(!is_bool($lookupArrayValue)) && (!is_null($lookupArrayValue))) {
 				return self::$_errorCodes['na'];
 			}
-			// convert tpo lowercase
-			if (is_string($lookup_array[$i]))
-				$lookup_array[$i] = strtolower($lookup_array[$i]);
+			//	convert strings to lowercase for case-insensitive testing
+			if (is_string($lookupArrayValue)) {
+				$lookup_array[$i] = strtolower($lookupArrayValue);
+			}
+			if ((is_null($lookupArrayValue)) && (($match_type == 1) || ($match_type == -1))) {
+				$lookup_array = array_slice($lookup_array,0,$i-1);
+			}
 		}
 
 		// if match_type is 1 or -1, the list has to be ordered
-		if($match_type==1 || $match_type==-1){
-			// **
-			// iniitialization
-			// store the last value
-			$iLastValue=$lookup_array[0];
-			// **
-			// loop on the cells
-			for ($i=0;$i<sizeof($lookup_array);++$i){
-				// check ascending order
-				if(($match_type==1 && $lookup_array[$i]<$iLastValue)
-					// OR check descending order
-					|| ($match_type==-1 && $lookup_array[$i]>$iLastValue)){
-					// error: list is not ordered correctly
-					//echo "error: list is not ordered correctly<br>";
-					return self::$_errorCodes['na'];
-				}
-			}
+		if ($match_type == 1) {
+			asort($lookup_array);
+			$keySet = array_keys($lookup_array);
+		} elseif($match_type == -1) {
+			arsort($lookup_array);
+			$keySet = array_keys($lookup_array);
 		}
+
 		// **
 		// find the match
 		// **
 		// loop on the cells
-		for ($i=0; $i < sizeof($lookup_array); ++$i){
-			// if match_type is 0 <=> find the first value that is exactly equal to lookup_value
-			if ($match_type==0 && $lookup_array[$i]==$lookup_value){
-				// this is the exact match
-				return $i+1;
-			}
-			// if match_type is -1 <=> find the smallest value that is greater than or equal to lookup_value
-			if ($match_type==-1 && $lookup_array[$i] < $lookup_value){
-				if ($i<1){
+//		var_dump($lookup_array);
+//		echo '<br />';
+		foreach($lookup_array as $i => $lookupArrayValue) {
+			if (($match_type == 0) && ($lookupArrayValue == $lookup_value)) {
+				//	exact match
+				return ++$i;
+			} elseif (($match_type == -1) && ($lookupArrayValue <= $lookup_value)) {
+//				echo '$i = '.$i.' => ';
+//				var_dump($lookupArrayValue);
+//				echo '<br />';
+//				echo 'Keyset = ';
+//				var_dump($keySet);
+//				echo '<br />';
+				$i = array_search($i,$keySet);
+//				echo '$i='.$i.'<br />';
+				// if match_type is -1 <=> find the smallest value that is greater than or equal to lookup_value
+				if ($i < 1){
 					// 1st cell was allready smaller than the lookup_value
 					break;
-				}
-				else
+				} else {
 					// the previous cell was the match
-					return $i;
-			}
-			// if match_type is 1 <=> find the largest value that is less than or equal to lookup_value
-			if ($match_type==1 && $lookup_array[$i] > $lookup_value){
-				if ($i<1){
+					return $keySet[$i-1]+1;
+				}
+			} elseif (($match_type == 1) && ($lookupArrayValue >= $lookup_value)) {
+//				echo '$i = '.$i.' => ';
+//				var_dump($lookupArrayValue);
+//				echo '<br />';
+//				echo 'Keyset = ';
+//				var_dump($keySet);
+//				echo '<br />';
+				$i = array_search($i,$keySet);
+//				echo '$i='.$i.'<br />';
+				// if match_type is 1 <=> find the largest value that is less than or equal to lookup_value
+				if ($i < 1){
 					// 1st cell was allready bigger than the lookup_value
 					break;
-				}
-				else
+				} else {
 					// the previous cell was the match
-					return $i;
+					return $keySet[$i-1]+1;
+				}
 			}
 		}
-		// unsuccessful in finding a match, return #N/A error value
-		//echo "unsuccessful in finding a match<br>";
+
+		//	unsuccessful in finding a match, return #N/A error value
 		return self::$_errorCodes['na'];
 	}	//	function MATCH()
 
@@ -11337,7 +11326,7 @@ class PHPExcel_Calculation_Functions {
 				break;
 			case 'string'	:
 				//	Errors
-				if ((strlen($value) > 0) && ($value{0} == '#')) {
+				if ((strlen($value) > 0) && ($value[0] == '#')) {
 					return $value;
 				}
 				break;
@@ -11378,25 +11367,18 @@ class PHPExcel_Calculation_Functions {
 		}
 		$value	= self::flattenSingleValue($value);
 
-		switch (gettype($value)) {
-			case 'double'	:
-			case 'float'	:
-			case 'integer'	:
+		if ((is_float($value)) || (is_int($value))) {
 				return 1;
-				break;
-			case 'boolean'	:
+		} elseif(is_bool($value)) {
 				return 4;
-				break;
-			case 'array'	:
+		} elseif(is_array($value)) {
 				return 64;
-				break;
-			case 'string'	:
-				//	Errors
-				if ((strlen($value) > 0) && ($value{0} == '#')) {
-					return 16;
-				}
-				return 2;
-				break;
+		} elseif(is_string($value)) {
+			//	Errors
+			if ((strlen($value) > 0) && ($value[0] == '#')) {
+				return 16;
+			}
+			return 2;
 		}
 		return 0;
 	}	//	function TYPE()

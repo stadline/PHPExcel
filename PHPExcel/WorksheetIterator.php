@@ -71,7 +71,7 @@ class PHPExcel_WorksheetIterator extends CachingIterator
 	/**
 	 * Rewind iterator
 	 */
-    public function rewind() {
+    public function rewind(): void {
         $this->_position = 0;
     }
 
@@ -80,7 +80,7 @@ class PHPExcel_WorksheetIterator extends CachingIterator
      *
      * @return PHPExcel_Worksheet
      */
-    public function current() {
+    public function current(): mixed {
     	return $this->_subject->getSheet($this->_position);
     }
 
@@ -89,14 +89,14 @@ class PHPExcel_WorksheetIterator extends CachingIterator
      *
      * @return int
      */
-    public function key() {
+    public function key(): mixed {
         return $this->_position;
     }
 
     /**
      * Next value
      */
-    public function next() {
+    public function next(): void {
         ++$this->_position;
     }
 
@@ -105,7 +105,7 @@ class PHPExcel_WorksheetIterator extends CachingIterator
      *
      * @return boolean
      */
-    public function valid() {
+    public function valid(): bool {
         return $this->_position < $this->_subject->getSheetCount();
     }
 }
