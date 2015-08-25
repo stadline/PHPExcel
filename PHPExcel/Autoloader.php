@@ -22,12 +22,10 @@
  * @package    PHPExcel
  * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt    LGPL
- * @version    ##VERSION##, ##DATE##
+ * @version    1.7.7, 2012-05-19
  */
 
 PHPExcel_Autoloader::Register();
-//	As we always try to run the autoloader before anything else, we can use it to do a few
-//		simple checks and initialisations
 PHPExcel_Shared_ZipStreamWrapper::register();
 // check mbstring.func_overload
 if (ini_get('mbstring.func_overload') & 2) {
@@ -70,16 +68,16 @@ class PHPExcel_Autoloader
 			return FALSE;
 		}
 
-		$pClassFilePath = PHPEXCEL_ROOT .
-						  str_replace('_',DIRECTORY_SEPARATOR,$pClassName) .
-						  '.php';
+		$pObjectFilePath = PHPEXCEL_ROOT .
+						   str_replace('_',DIRECTORY_SEPARATOR,$pClassName) .
+						   '.php';
 
-		if ((file_exists($pClassFilePath) === false) || (is_readable($pClassFilePath) === false)) {
+		if ((file_exists($pObjectFilePath) === false) || (is_readable($pObjectFilePath) === false)) {
 			//	Can't load
 			return FALSE;
 		}
 
-		require($pClassFilePath);
+		require($pObjectFilePath);
 	}	//	function Load()
 
 }

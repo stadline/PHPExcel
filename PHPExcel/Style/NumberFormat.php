@@ -22,7 +22,7 @@
  * @package	PHPExcel_Style
  * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license	http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version	##VERSION##, ##DATE##
+ * @version	1.7.7, 2012-05-19
  */
 
 
@@ -128,20 +128,11 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 	 * Create a new PHPExcel_Style_NumberFormat
 	 *
 	 * @param	boolean	$isSupervisor	Flag indicating if this is a supervisor or not
-	 *									Leave this value at default unless you understand exactly what
-	 *										its ramifications are
-	 * @param	boolean	$isConditional	Flag indicating if this is a conditional style or not
-	 *									Leave this value at default unless you understand exactly what
-	 *										its ramifications are
 	 */
-	public function __construct($isSupervisor = false, $isConditional = false)
+	public function __construct($isSupervisor = false)
 	{
 		// Supervisor?
 		$this->_isSupervisor = $isSupervisor;
-
-		if ($isConditional) {
-			$this->_formatCode = NULL;
-		}
 	}
 
 	/**
@@ -469,7 +460,6 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 			//	12-hour suffix
 			'am/pm'	=> 'A',
 			//	4-digit year
-			'e'	=> 'Y',
 			'yyyy'	=> 'Y',
 			//	2-digit year
 			'yy'	=> 'y',

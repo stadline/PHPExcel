@@ -22,7 +22,7 @@
  * @package	PHPExcel_Writer
  * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license	http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version	##VERSION##, ##DATE##
+ * @version	1.7.7, 2012-05-19
  */
 
 
@@ -630,9 +630,7 @@ class PHPExcel_Writer_HTML implements PHPExcel_Writer_IWriter {
 
 		// table { }
 		$css['table']['border-collapse']  = 'collapse';
-	    if (!$this->_isPdf) {
-			$css['table']['page-break-after'] = 'always';
-		}
+		$css['table']['page-break-after'] = 'always';
 
 		// .gridlines td { }
 		$css['.gridlines td']['border'] = '1px dotted black';
@@ -918,14 +916,12 @@ class PHPExcel_Writer_HTML implements PHPExcel_Writer_IWriter {
 		$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($pSheet->getHighestColumn()) - 1;
 		$i = -1;
 		while($i++ < $highestColumnIndex) {
-		    if (!$this->_isPdf) {
-				if (!$this->_useInlineCss) {
-					$html .= '		<col class="col' . $i . '">' . PHP_EOL;
-				} else {
-					$style = isset($this->_cssStyles['table.sheet' . $sheetIndex . ' col.col' . $i]) ?
-						$this->_assembleCSS($this->_cssStyles['table.sheet' . $sheetIndex . ' col.col' . $i]) : '';
-					$html .= '		<col style="' . $style . '">' . PHP_EOL;
-				}
+			if (!$this->_useInlineCss) {
+				$html .= '		<col class="col' . $i . '">' . PHP_EOL;
+			} else {
+				$style = isset($this->_cssStyles['table.sheet' . $sheetIndex . ' col.col' . $i]) ?
+					$this->_assembleCSS($this->_cssStyles['table.sheet' . $sheetIndex . ' col.col' . $i]) : '';
+				$html .= '		<col style="' . $style . '">' . PHP_EOL;
 			}
 		}
 
@@ -1060,7 +1056,6 @@ class PHPExcel_Writer_HTML implements PHPExcel_Writer_IWriter {
 								array($this, 'formatColor')
 							);
 						}
-						$cellData = htmlspecialchars($cellData);
 						if ($pSheet->getParent()->getCellXfByIndex( $cell->getXfIndex() )->getFont()->getSuperScript()) {
 							$cellData = '<sup>'.$cellData.'</sup>';
 						} elseif ($pSheet->getParent()->getCellXfByIndex( $cell->getXfIndex() )->getFont()->getSubScript()) {

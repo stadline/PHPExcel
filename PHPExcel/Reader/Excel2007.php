@@ -22,7 +22,7 @@
  * @package    PHPExcel_Reader
  * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    ##VERSION##, ##DATE##
+ * @version    1.7.7, 2012-05-19
  */
 
 
@@ -689,17 +689,16 @@ class PHPExcel_Reader_Excel2007 implements PHPExcel_Reader_IReader
 
 					$dxfs = array();
 					if (!$this->_readDataOnly && $xmlStyles) {
-						//	Conditional Styles
 						if ($xmlStyles->dxfs) {
 							foreach ($xmlStyles->dxfs->dxf as $dxf) {
-								$style = new PHPExcel_Style(FALSE, TRUE);
+								$style = new PHPExcel_Style;
 								self::_readStyle($style, $dxf);
 								$dxfs[] = $style;
 							}
 						}
 
-						//	Cell Styles
-						if ($xmlStyles->cellStyles) {
+						if ($xmlStyles->cellStyles)
+						{
 							foreach ($xmlStyles->cellStyles->cellStyle as $cellStyle) {
 								if (intval($cellStyle['builtinId']) == 0) {
 									if (isset($cellStyles[intval($cellStyle['xfId'])])) {

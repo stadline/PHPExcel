@@ -22,7 +22,7 @@
  * @package    PHPExcel_Settings
  * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    ##VERSION##, ##DATE##
+ * @version    1.7.7, 2012-05-19
  */
 
 /** PHPExcel root directory */
@@ -46,9 +46,9 @@ class PHPExcel_Settings
     const CHART_RENDERER_JPGRAPH	= 'jpgraph';
 
 	/**	Optional PDF Rendering libraries */
-    const PDF_RENDERER_TCPDF		= 'tcPDF';
-    const PDF_RENDERER_DOMPDF		= 'DomPDF';
-    const PDF_RENDERER_MPDF			= 'mPDF';
+    const PDF_RENDERER_TCPDF		= 'tcpdf';
+    const PDF_RENDERER_DOMPDF		= 'dompdf';
+    const PDF_RENDERER_MPDF			= 'mpdf';
 
 
 	private static $_chartRenderers = array(
@@ -220,9 +220,6 @@ class PHPExcel_Settings
 	 * @return	 boolean					Success or failure
 	 */
 	public static function setChartRendererPath($libraryBaseDir) {
-		if ((file_exists($libraryBaseDir) === false) || (is_readable($libraryBaseDir) === false)) {
-			return FALSE;
-		}
 		self::$_chartRendererPath = $libraryBaseDir;
 
 		return TRUE;
@@ -296,9 +293,6 @@ class PHPExcel_Settings
 	 * @return	 boolean					Success or failure
 	 */
 	public static function setPdfRendererPath($libraryBaseDir) {
-		if ((file_exists($libraryBaseDir) === false) || (is_readable($libraryBaseDir) === false)) {
-			return FALSE;
-		}
 		self::$_pdfRendererPath = $libraryBaseDir;
 
 		return TRUE;

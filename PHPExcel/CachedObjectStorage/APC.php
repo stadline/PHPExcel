@@ -22,7 +22,7 @@
  * @package    PHPExcel_CachedObjectStorage
  * @copyright  Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version    ##VERSION##, ##DATE##
+ * @version    1.7.7, 2012-05-19
  */
 
 
@@ -212,6 +212,7 @@ class PHPExcel_CachedObjectStorage_APC extends PHPExcel_CachedObjectStorage_Cach
 	/**
 	 * Clear the cell collection and disconnect from our parent
 	 *
+	 * @access	public
 	 * @return	void
 	 */
 	public function unsetWorksheetCells() {
@@ -233,6 +234,7 @@ class PHPExcel_CachedObjectStorage_APC extends PHPExcel_CachedObjectStorage_Cach
 	/**
 	 * Initialise this new cell collection
 	 *
+	 * @access	public
 	 * @param	PHPExcel_Worksheet	$parent		The worksheet for this cell collection
 	 * @param	array of mixed		$arguments	Additional initialisation arguments
 	 */
@@ -251,6 +253,8 @@ class PHPExcel_CachedObjectStorage_APC extends PHPExcel_CachedObjectStorage_Cach
 
 	/**
 	 * Destroy this cell collection
+	 *
+	 * @access	public
 	 */
 	public function __destruct() {
 		$cacheList = $this->getCellList();
@@ -264,6 +268,7 @@ class PHPExcel_CachedObjectStorage_APC extends PHPExcel_CachedObjectStorage_Cach
 	 * Identify whether the caching method is currently available
 	 * Some methods are dependent on the availability of certain extensions being enabled in the PHP build
 	 *
+	 * @access	public
 	 * @return	boolean
 	 */
 	public static function cacheMethodIsAvailable() {

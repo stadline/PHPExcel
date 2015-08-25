@@ -22,7 +22,7 @@
  * @package	PHPExcel_Style
  * @copyright Copyright (c) 2006 - 2012 PHPExcel (http://www.codeplex.com/PHPExcel)
  * @license http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt	LGPL
- * @version ##VERSION##, ##DATE##
+ * @version 1.7.7, 2012-05-19
  */
 
 
@@ -59,7 +59,7 @@ class PHPExcel_Style_Color implements PHPExcel_IComparable
 	 *
 	 * @var string
 	 */
-	private $_argb	= NULL;
+	private $_argb;
 
 	/**
 	 * Supervisor?
@@ -88,21 +88,14 @@ class PHPExcel_Style_Color implements PHPExcel_IComparable
 	 *
 	 * @param	string	$pARGB			ARGB value for the colour
 	 * @param	boolean	$isSupervisor	Flag indicating if this is a supervisor or not
-	 *									Leave this value at default unless you understand exactly what
-	 *										its ramifications are
-	 * @param	boolean	$isConditional	Flag indicating if this is a conditional style or not
-	 *									Leave this value at default unless you understand exactly what
-	 *										its ramifications are
 	 */
-	public function __construct($pARGB = PHPExcel_Style_Color::COLOR_BLACK, $isSupervisor = false, $isConditional = false)
+	public function __construct($pARGB = PHPExcel_Style_Color::COLOR_BLACK, $isSupervisor = false)
 	{
 		//	Supervisor?
 		$this->_isSupervisor = $isSupervisor;
 
 		//	Initialise values
-		if (!$isConditional) {
-			$this->_argb = $pARGB;
-		}
+		$this->_argb = $pARGB;
 	}
 
 	/**
@@ -138,12 +131,17 @@ class PHPExcel_Style_Color implements PHPExcel_IComparable
 	public function getSharedComponent()
 	{
 		switch ($this->_parentPropertyName) {
-			case '_endColor':
-				return $this->_parent->getSharedComponent()->getEndColor();		break;
-			case '_color':
-				return $this->_parent->getSharedComponent()->getColor();		break;
-			case '_startColor':
-				return $this->_parent->getSharedComponent()->getStartColor();	break;
+		case '_endColor':
+			return $this->_parent->getSharedComponent()->getEndColor();
+			break;
+
+		case '_color':
+			return $this->_parent->getSharedComponent()->getColor();
+			break;
+
+		case '_startColor':
+			return $this->_parent->getSharedComponent()->getStartColor();
+			break;
 		}
 	}
 
@@ -188,15 +186,17 @@ class PHPExcel_Style_Color implements PHPExcel_IComparable
 	public function getStyleArray($array)
 	{
 		switch ($this->_parentPropertyName) {
-			case '_endColor':
-				$key = 'endcolor';
-				break;
-			case '_color':
-				$key = 'color';
-				break;
-			case '_startColor':
-				$key = 'startcolor';
-				break;
+		case '_endColor':
+			$key = 'endcolor';
+			break;
+
+		case '_color':
+			$key = 'color';
+			break;
+
+		case '_startColor':
+			$key = 'startcolor';
+			break;
 
 		}
 		return $this->_parent->getStyleArray(array($key => $array));
