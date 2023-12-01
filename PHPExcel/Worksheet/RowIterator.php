@@ -80,7 +80,8 @@ class PHPExcel_Worksheet_RowIterator extends CachingIterator
      *
      * @return PHPExcel_Worksheet_Row
      */
-    public function current() {
+    public function current(): mixed
+    {
     	return new PHPExcel_Worksheet_Row($this->_subject, $this->_position);
     }
 
@@ -89,7 +90,8 @@ class PHPExcel_Worksheet_RowIterator extends CachingIterator
      *
      * @return int
      */
-    public function key() {
+    public function key(): mixed
+    {
         return $this->_position;
     }
 

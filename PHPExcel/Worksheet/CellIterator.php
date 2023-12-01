@@ -96,7 +96,8 @@ class PHPExcel_Worksheet_CellIterator extends CachingIterator
      *
      * @return PHPExcel_Cell
      */
-    public function current() {
+    public function current(): mixed
+    {
 		return $this->_subject->getCellByColumnAndRow($this->_position, $this->_rowIndex);
     }
 
@@ -105,7 +106,8 @@ class PHPExcel_Worksheet_CellIterator extends CachingIterator
      *
      * @return int
      */
-    public function key() {
+    public function key(): mixed
+    {
         return $this->_position;
     }
 
